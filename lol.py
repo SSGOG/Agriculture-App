@@ -17,7 +17,7 @@ def load_pickle(file_path):
         return pickle.load(file)
 
 # Load ensemble models & scaler
-ensemble_model_path = r"D:\agriconfi\project\models\ensemble_model.pkl"
+ensemble_model_path = "ensemble_model.pkl"
 if os.path.exists(ensemble_model_path):
     with open(ensemble_model_path, "rb") as f:
         scaler, xgb_model, rf_model, bagging_model = pickle.load(f)
@@ -69,13 +69,13 @@ with st.sidebar.expander("Adjust Parameters", expanded=True):
 
 # Model Selection
 models = {
-    "Random Forest Regressor": r"D:\agriconfi\project\models\random_forest_model.pkl",
-    "XGBoost Regressor": r"D:\agriconfi\project\models\xgb_model.pkl",
-    "Decision Trees Regressor": r"D:\agriconfi\project\models\DTR.pkl",
-    "K-Nearest Neighbours Regressor": r"D:\agriconfi\project\models\knn_model.pkl",
-    "Bagging Regressor": r"D:\agriconfi\project\models\BR_model.pkl",
-    "Extra Trees Regressor": r"D:\agriconfi\project\models\ETR_linear_regression_model.pkl",
-    "Support Vector Regression": r"D:\agriconfi\project\models\svr_model.pkl",
+    "Random Forest Regressor": "random_forest_model.pkl",
+    "XGBoost Regressor": "xgb_model.pkl",
+    "Decision Trees Regressor": "DTR.pkl",
+    "K-Nearest Neighbours Regressor": "knn_model.pkl",
+    "Bagging Regressor": "BR_model.pkl",
+    "Extra Trees Regressor": "ETR_linear_regression_model.pkl",
+    "Support Vector Regression": "svr_model.pkl",
 }
 model_choice = st.sidebar.selectbox("🔍 Select a Machine Learning Model:", list(models.keys()))
 
