@@ -28,7 +28,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url('https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/maahaha1.JPG');
+        background-image: url("https://github.com/SSGOG/Agriculture-App/blob/main/maahaha1.JPG");
         background-size: cover;
         background-repeat: no-repeat;
         background-attachment: fixed;
