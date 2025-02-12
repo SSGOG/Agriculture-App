@@ -24,16 +24,15 @@ if os.path.exists(ensemble_model_path):
 else:
     st.error("⚠️ Error: Ensemble model file not found!")
 
+background_image_url = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/maahaha1.JPG"
+
 st.markdown(
-    """
+    f"""
     <style>
-    .stApp {
-        background-image: url("https://github.com/SSGOG/Agriculture-App/blob/main/maahaha1.JPG");
+    .stApp {{
+        background: url("{background_image_url}") no-repeat center center fixed;
         background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-position: center;
-    }
+    }}
     </style>
     """,
     unsafe_allow_html=True
