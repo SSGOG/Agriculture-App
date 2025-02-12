@@ -24,29 +24,20 @@ if os.path.exists(ensemble_model_path):
 else:
     st.error("⚠️ Error: Ensemble model file not found!")
 
-# Function to encode image as Base64
-def get_base64_image(image_path):
-    with open(image_path, "rb") as file:
-        return base64.b64encode(file.read()).decode()
-
-# Background Image
-background_image_path = "https://github.com/SSGOG/Agriculture-App/blob/main/maahaha1.JPG"
-if os.path.exists(background_image_path):
-    encoded_image = get_base64_image(background_image_path)
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url('data:image/jpeg;base64,{encoded_image}');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-position: center;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: url('https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/maahaha1.JPG');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Title & Introduction
 st.title("🌾 Machine Learning for Forecasting Maize Turcicum Leaf Blight")
