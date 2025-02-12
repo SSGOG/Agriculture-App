@@ -17,7 +17,7 @@ def load_pickle(file_path):
         return pickle.load(file)
 
 # Load ensemble models & scaler
-ensemble_model_path = "ensemble_model.pkl"
+ensemble_model_path = r"ensemble_model.pkl"
 if os.path.exists(ensemble_model_path):
     with open(ensemble_model_path, "rb") as f:
         scaler, xgb_model, rf_model, bagging_model = pickle.load(f)
@@ -69,13 +69,13 @@ with st.sidebar.expander("Adjust Parameters", expanded=True):
 
 # Model Selection
 models = {
-    "Random Forest Regressor": "random_forest_model.pkl",
-    "XGBoost Regressor": "xgb_model.pkl",
-    "Decision Trees Regressor": "DTR.pkl",
-    "K-Nearest Neighbours Regressor": "knn_model.pkl",
-    "Bagging Regressor": "BR_model.pkl",
-    "Extra Trees Regressor": "ETR_linear_regression_model.pkl",
-    "Support Vector Regression": "svr_model.pkl",
+    "Random Forest Regressor": r"random_forest_model.pkl",
+    "XGBoost Regressor": r"xgb_model.pkl",
+    "Decision Trees Regressor": r"DTR.pkl",
+    "K-Nearest Neighbours Regressor": r"knn_model.pkl",
+    "Bagging Regressor": r"BR_model.pkl",
+    "Extra Trees Regressor": r"ETR_linear_regression_model.pkl",
+    "Support Vector Regression": r"svr_model.pkl",
 }
 model_choice = st.sidebar.selectbox("🔍 Select a Machine Learning Model:", list(models.keys()))
 
