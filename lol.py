@@ -4,6 +4,13 @@ import numpy as np
 import base64
 import os
 
+# Set page configuration
+st.set_page_config(
+    page_title="Machine Learning for Maize Turcicum Leaf Blight",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 # Function to load model from file
 def load_pickle(file_path):
     with open(file_path, "rb") as file:
@@ -21,13 +28,6 @@ else:
 def get_base64_image(image_path):
     with open(image_path, "rb") as file:
         return base64.b64encode(file.read()).decode()
-
-# Set page configuration
-st.set_page_config(
-    page_title="Machine Learning for Maize Turcicum Leaf Blight",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 # Background Image
 background_image_path = r"D:\agriconfi\project\models\maahaha1.JPG"
