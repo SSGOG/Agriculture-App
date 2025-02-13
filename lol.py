@@ -1,6 +1,7 @@
 import streamlit as st
 import pickle
 import numpy as np
+import base64
 import os
 
 # Set page configuration
@@ -16,15 +17,15 @@ def load_pickle(file_path):
         return pickle.load(file)
 
 # Load ensemble models & scaler
-ensemble_model_path = "ensemble_model.pkl"
+ensemble_model_path = r"ensemble_model.pkl"
 if os.path.exists(ensemble_model_path):
     with open(ensemble_model_path, "rb") as f:
         scaler, xgb_model, rf_model, bagging_model = pickle.load(f)
 else:
     st.error("⚠️ Error: Ensemble model file not found!")
 
-# Background Image
 background_image_url = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/maahaha1.JPG"
+
 st.markdown(
     f"""
     <style>
@@ -58,33 +59,37 @@ with st.sidebar.expander("Adjust Parameters", expanded=True):
 
 # Model Selection
 models = {
-    "Random Forest Regressor": "random_forest_model.pkl",
-    "XGBoost Regressor": "xgb_model.pkl",
-    "Decision Trees Regressor": "DTR.pkl",
-    "K-Nearest Neighbours Regressor": "knn_model.pkl",
-    "Bagging Regressor": "BR_model.pkl",
-    "Extra Trees Regressor": "ETR_linear_regression_model.pkl",
-    "Support Vector Regression": "svr_model.pkl",
+    "Random Forest Regressor": r"random_forest_model.pkl",
+    "XGBoost Regressor": r"xgb_model.pkl",
+    "Decision Trees Regressor": r"DTR.pkl",
+    "K-Nearest Neighbours Regressor": r"knn_model.pkl",
+    "Bagging Regressor": r"BR_model.pkl",
+    "Extra Trees Regressor": r"ETR_linear_regression_model.pkl",
+    "Support Vector Regression": r"svr_model.pkl",
 }
 model_choice = st.sidebar.selectbox("🔍 Select a Machine Learning Model:", list(models.keys()))
 
 # Prepare input features
 input_features = np.array([[temp_max, temp_min, rh_max, rh_min, wind_speed, sun_shine, rainfall]])
 
-# Check if all inputs are zero
+# Function to check if all inputs are zero
 def all_inputs_zero(inputs):
     return np.all(inputs == 0)
 
 # Predict with Selected Model
 if st.sidebar.button("Predict"):
     if all_inputs_zero(input_features):
-        st.warning("⚠️ Please enter valid input values before predicting.")
+        st.warning("⚠️ Please enter valid input values. All fields cannot be zero.")
     else:
         try:
             model_path = models.get(model_choice)
             if model_path and os.path.exists(model_path):
                 model = load_pickle(model_path)
-                input_features_scaled = scaler.transform(input_features) if "scaler" in locals() else input_features
+                if "scaler" in locals():
+                    input_features_scaled = scaler.transform(input_features)
+                else:
+                    input_features_scaled = input_features  # If no scaler is available
+                
                 prediction = model.predict(input_features_scaled)[0]
                 st.success(f"Predicted Disease Index (PDI): {prediction:.2f}")
             else:
@@ -92,16 +97,23 @@ if st.sidebar.button("Predict"):
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-# Predict with Ensemble Model
+# Predict with Ensembled Model
 if st.sidebar.button("Predict with Ensemble Model"):
     if all_inputs_zero(input_features):
-        st.warning("⚠️ Please enter valid input values before predicting.")
+        st.warning("⚠️ Please enter valid input values. All fields cannot be zero.")
     else:
         try:
-            input_features_scaled = scaler.transform(input_features) if "scaler" in locals() else input_features
+            if "scaler" in locals():
+                input_features_scaled = scaler.transform(input_features)
+            else:
+                input_features_scaled = input_features
+
+            # Predictions from each model
             pred_xgb = xgb_model.predict(input_features_scaled)
             pred_rf = rf_model.predict(input_features_scaled)
             pred_bagging = bagging_model.predict(input_features_scaled)
+
+            # Average the predictions
             ensemble_prediction = (pred_xgb + pred_rf + pred_bagging) / 3
             st.success(f"Predicted Disease Index (PDI) (Ensemble): {ensemble_prediction[0]:.2f}")
         except Exception as e:
