@@ -37,7 +37,7 @@ def get_base64_image(image_path):
         return base64.b64encode(file.read()).decode()
 
 # Background Image
-background_image_path = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/Untitled1.jpg"
+background_image_path = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/Untitled1.JPG"
 if os.path.exists(background_image_path):
     encoded_image = get_base64_image(background_image_path)
     st.markdown(
