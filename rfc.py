@@ -3,20 +3,23 @@ import pickle
 import numpy as np
 import base64
 import os
+
 # Set page configuration
 st.set_page_config(
     page_title="Machine Learning for Maize Turcicum Leaf Blight",
     layout="wide",
 )
-# Initialize session state at the very beginning (before any usage)
+
+# Initialize session state
 if "page" not in st.session_state:
     st.session_state.page = "Home"
+    st.session_state.input_valid = False
+    st.session_state.input_features = None
 
-# Sidebar Navigation - this will update the session state
+# Sidebar Navigation
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to:", ["Home", "TLB Disease Information", "Contact Us"])
 st.session_state.page = page
-
 
 # Function to load model from file
 def load_pickle(file_path):
@@ -24,12 +27,15 @@ def load_pickle(file_path):
         return pickle.load(file)
 
 # Load ensemble models & scaler
-ensemble_model_path = r"ensemble_model.pkl"
-if os.path.exists(ensemble_model_path):
-    with open(ensemble_model_path, "rb") as f:
-        scaler, xgb_model, rf_model, bagging_model = pickle.load(f)
-else:
-    st.error("⚠️ Error: Ensemble model file not found!")
+try:
+    ensemble_model_path = r"ensemble_model.pkl"
+    if os.path.exists(ensemble_model_path):
+        with open(ensemble_model_path, "rb") as f:
+            scaler, xgb_model, rf_model, bagging_model = pickle.load(f)
+    else:
+        st.sidebar.error("⚠️ Ensemble model file not found!")
+except Exception as e:
+    st.sidebar.error(f"⚠️ Error loading ensemble model: {str(e)}")
 
 # Function to encode image as Base64
 def get_base64_image(image_path):
@@ -37,26 +43,46 @@ def get_base64_image(image_path):
         return base64.b64encode(file.read()).decode()
 
 # Background Image
-background_image_url = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/Untitled1.JPG"
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-image: url("{background_image_url}");
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-position: center;
-    }}
-    .content-box {{
-        background: rgba(255, 255, 255, 0.8);
-        padding: 20px;
-        border-radius: 10px;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+background_image_path = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/Untitled1.JPG"
+if os.path.exists(background_image_path):
+    encoded_image = get_base64_image(background_image_path)
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url('data:image/jpeg;base64,{encoded_image}');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }}
+        .content-box {{
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }}
+        .button-container {{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }}
+        .nav-button {{
+            padding: 10px;
+            font-size: 18px;
+            width: 48%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }}
+        .nav-button:hover {{
+            background-color: #45a049;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # Home Page
 if st.session_state.page == "Home":
@@ -82,15 +108,13 @@ if st.session_state.page == "Home":
         </div>
     """, unsafe_allow_html=True)
 
-    # Centered Input Parameters
+    # Input Parameters
     st.markdown("""
         <div class="content-box">
         <h3>Input Parameters</h3>
         <p>Enter the weather parameters below to predict the disease index:</p>
         """, unsafe_allow_html=True)
     
-    input_valid = False  # Initialize input_valid to False
-
     with st.form("input_form"):
         temp_max = st.number_input("Temperature Max (°C):", min_value=0.0, step=0.1)
         temp_min = st.number_input("Temperature Min (°C):", min_value=0.0, step=0.1)
@@ -100,6 +124,15 @@ if st.session_state.page == "Home":
         sun_shine = st.number_input("Sun Shine (hrs):", min_value=0.0, step=0.1)
         rainfall = st.number_input("Rainfall (mm):", min_value=0.0, step=0.1)
         submitted = st.form_submit_button("Submit")
+    
+        if submitted:
+            if temp_max == 0 or temp_min == 0 or rh_max == 0 or rh_min == 0 or wind_speed == 0 or sun_shine == 0 or rainfall == 0:
+                st.error("⚠️ Error: All input parameters must be greater than zero!")
+                st.session_state.input_valid = False
+            else:
+                st.session_state.input_valid = True
+                st.session_state.input_features = np.array([[temp_max, temp_min, rh_max, rh_min, wind_speed, sun_shine, rainfall]])
+                st.success("Input parameters submitted successfully!")
     
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -115,43 +148,45 @@ if st.session_state.page == "Home":
     }
     model_choice = st.selectbox("🔍 Select a Machine Learning Model:", list(models.keys()))
     
-    # Ensure inputs are not zero
-    if submitted:
-        if temp_max == 0 or temp_min == 0 or rh_max == 0 or rh_min == 0 or wind_speed == 0 or sun_shine == 0 or rainfall == 0:
-            st.error("⚠️ Error: All input parameters must be greater than zero!")
-        else:
-            input_valid = True
-            input_features = np.array([[temp_max, temp_min, rh_max, rh_min, wind_speed, sun_shine, rainfall]])  
-    
-    if st.button("Predict") and input_valid:
-        try:
-            model_path = models.get(model_choice)
-            if model_path and os.path.exists(model_path):
-                model = load_pickle(model_path)
-                if "scaler" in locals():
-                    input_features_scaled = scaler.transform(input_features)
-                else:
-                    input_features_scaled = input_features
-                prediction = model.predict(input_features_scaled)[0]
-                st.success(f"Predicted Disease Index (PDI): {prediction:.2f}")
+    # Prediction buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Predict"):
+            if not st.session_state.input_valid:
+                st.error("Please submit valid input parameters first!")
             else:
-                st.error(f"⚠️ Error: Model file for {model_choice} not found!")
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
+                try:
+                    model_path = models.get(model_choice)
+                    if model_path and os.path.exists(model_path):
+                        model = load_pickle(model_path)
+                        if "scaler" in locals():
+                            input_features_scaled = scaler.transform(st.session_state.input_features)
+                        else:
+                            input_features_scaled = st.session_state.input_features
+                        prediction = model.predict(input_features_scaled)[0]
+                        st.success(f"Predicted Disease Index (PDI): {prediction:.2f}")
+                    else:
+                        st.error(f"⚠️ Error: Model file for {model_choice} not found!")
+                except Exception as e:
+                    st.error(f"❌ Error: {e}")
     
-    if st.button("Predict with Ensemble Model") and input_valid:
-        try:
-            if "scaler" in locals():
-                input_features_scaled = scaler.transform(input_features)
+    with col2:
+        if st.button("Predict with Ensemble Model"):
+            if not st.session_state.input_valid:
+                st.error("Please submit valid input parameters first!")
             else:
-                input_features_scaled = input_features
-            pred_xgb = xgb_model.predict(input_features_scaled)
-            pred_rf = rf_model.predict(input_features_scaled)
-            pred_bagging = bagging_model.predict(input_features_scaled)
-            ensemble_prediction = (pred_xgb + pred_rf + pred_bagging) / 3
-            st.success(f"Predicted Disease Index (PDI) (Ensemble): {ensemble_prediction[0]:.2f}")
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
+                try:
+                    if "scaler" in locals():
+                        input_features_scaled = scaler.transform(st.session_state.input_features)
+                    else:
+                        input_features_scaled = st.session_state.input_features
+                    pred_xgb = xgb_model.predict(input_features_scaled)
+                    pred_rf = rf_model.predict(input_features_scaled)
+                    pred_bagging = bagging_model.predict(input_features_scaled)
+                    ensemble_prediction = (pred_xgb + pred_rf + pred_bagging) / 3
+                    st.success(f"Predicted Disease Index (PDI) (Ensemble): {ensemble_prediction[0]:.2f}")
+                except Exception as e:
+                    st.error(f"❌ Error: {e}")
 
 # Symptoms & Solutions Page
 elif st.session_state.page == "TLB Disease Information":
@@ -221,8 +256,7 @@ elif st.session_state.page == "Contact Us":
         📲 Contact Details
 
         **Dr. Jadesha**  
-        Plant Pathologist  
-        Zonal Agricultural Research Station, VC Farm  
+        Plant Pathologist   
         University of Agricultural Sciences, Bengaluru, Karnataka, India.  
         📧 Email: jadesha.uasb@gmail.com  
 
