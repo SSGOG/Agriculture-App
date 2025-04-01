@@ -14,7 +14,7 @@ if "page" not in st.session_state:
 
 # Sidebar Navigation - this will update the session state
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to:", ["Home", "Symptoms & Solutions", "Contact Us"])
+page = st.sidebar.radio("Go to:", ["Home", "TLB Disease Information", "Contact Us"])
 st.session_state.page = page
 
 
@@ -37,7 +37,7 @@ def get_base64_image(image_path):
         return base64.b64encode(file.read()).decode()
 
 # Background Image
-background_image_path = r"D:\agriconfi\project\models\Untitled1.JPG"
+background_image_path = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/Untitled1.jpg"
 if os.path.exists(background_image_path):
     encoded_image = get_base64_image(background_image_path)
     st.markdown(
@@ -174,8 +174,8 @@ if st.session_state.page == "Home":
             st.error(f"❌ Error: {e}")
 
 # Symptoms & Solutions Page
-elif st.session_state.page == "Symptoms & Solutions":
-    st.title("🌱 Symptoms & Solutions")
+elif st.session_state.page == "TLB Disease Information":
+    st.title("🌱 TLB Disease Information")
     st.markdown("""
         <div class='content-box'>
         <style>
