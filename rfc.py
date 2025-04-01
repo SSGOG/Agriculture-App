@@ -37,46 +37,26 @@ def get_base64_image(image_path):
         return base64.b64encode(file.read()).decode()
 
 # Background Image
-background_image_path = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/Untitled1.JPG"
-if os.path.exists(background_image_path):
-    encoded_image = get_base64_image(background_image_path)
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url('data:image/jpeg;base64,{encoded_image}');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-position: center;
-        }}
-        .content-box {{
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-        }}
-        .button-container {{
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }}
-        .nav-button {{
-            padding: 10px;
-            font-size: 18px;
-            width: 48%;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }}
-        .nav-button:hover {{
-            background-color: #45a049;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+background_image_url = "https://raw.githubusercontent.com/SSGOG/Agriculture-App/main/Untitled1.JPG"
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: url("{background_image_url}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+    }}
+    .content-box {{
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Home Page
 if st.session_state.page == "Home":
