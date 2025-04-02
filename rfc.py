@@ -96,13 +96,13 @@ if st.session_state.page == "Home":
         """, unsafe_allow_html=True)
     
     with st.form("input_form"):
-        temp_max = st.number_input("Temperature Max (°C):", min_value=0.0, step=0.1)
-        temp_min = st.number_input("Temperature Min (°C):", min_value=0.0, step=0.1)
-        rh_max = st.number_input("Relative Humidity Max (%):", min_value=0.0, step=0.1)
-        rh_min = st.number_input("Relative Humidity Min (%):", min_value=0.0, step=0.1)
-        wind_speed = st.number_input("Wind Speed (km/h):", min_value=0.0, step=0.1)
-        sun_shine = st.number_input("Sun Shine (hrs):", min_value=0.0, step=0.1)
-        rainfall = st.number_input("Rainfall (mm):", min_value=0.0, step=0.1)
+        temp_max = st.number_input("Temperature Max (°C):", min_value=20.0,max_value=50.0 , step=0.1)
+        temp_min = st.number_input("Temperature Min (°C):", min_value=10.0,max_value=30.0 , step=0.1)
+        rh_max = st.number_input("Relative Humidity Max (%):", min_value=60.0,max_value=100.0 , step=0.1)
+        rh_min = st.number_input("Relative Humidity Min (%):", min_value=40.0,max_value=90.0 , step=0.1)
+        wind_speed = st.number_input("Wind Speed (km/h):", min_value=1.0,max_value=10.0 , step=0.1)
+        sun_shine = st.number_input("Sun Shine (hrs):", min_value=1.0,max_value=10.0 , step=0.1)
+        rainfall = st.number_input("Rainfall (mm):", min_value=0.0,max_value=20.0 , step=0.1)
         submitted = st.form_submit_button("Submit")
     
         if submitted:
