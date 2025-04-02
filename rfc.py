@@ -235,7 +235,7 @@ elif st.session_state.page == "Contact Us":
         </style>        
         📲 Contact Details
 
-        **Dr. Jadesha**  
+        **Dr. Jadesha G., PhD**  
         Plant Pathologist   
         University of Agricultural Sciences, Bengaluru, Karnataka, India.  
         📧 Email: jadesha.uasb@gmail.com  
